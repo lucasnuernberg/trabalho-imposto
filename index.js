@@ -32,9 +32,78 @@ Cria um arquivo exemplo com este conteúdo:
 Logo após rode no terminal:
 
       node index.js NomeModelo 3.000 5
+
+
 */
-function modelo(nome, salario, horasExtra) {
+/* Nome
+Valor salário bruto
+Valor total de horas extra
+Faixa de desconto do INSS
+Valor descontado para o INSS
+Faixa de desconto do IR
+Valor descontado para o IR
+Valor salário líquido (salário bruto - desconto INSS - desconto IR + horas extras)
+ */
+/* modelo(process.argv[2], process.argv[3], process.argv[4]); */
+function modelo(nome, salario, horasExtrasAnual) {
+    nome = process.argv[2];
+    salario = parseInt(process.argv[3]);
+    horasExtrasAnual = parseInt(process.argv[4]);
+    var salarioBruto = totalVencimentos(salario, horasExtrasAnual);
+    var descontoInss = calculoInss(salarioBruto);
+    var descontoIr = calculoIr(salario, descontoInss);
+    var salarioTotalAnual = salario * 12;
+    var valorHoraExtra = (salario / 200) * 1.5;
+    var totalHorasExtras = valorHoraExtra * horasExtrasAnual;
+    console.log('');
     console.log(nome);
-    console.log(salario);
-    console.log(horasExtra);
+    console.log('Salario bruto: ' + salarioBruto);
+    console.log('Desconto INSS: ' + descontoInss);
+    console.log('Desconto IR: ' + descontoIr);
+    console.log('Salário Líquido: ' + (salario - descontoInss - descontoIr + totalHorasExtras));
 }
+function totalVencimentos(salario, horasExtras) {
+    var salarioTotalAnual = salario * 12;
+    var valorHoraExtra = (salario / 200) * 1.5;
+    var totalHorasExtras = valorHoraExtra * horasExtras;
+    var salarioBrutoAnual = salarioTotalAnual + totalHorasExtras;
+    return salarioBrutoAnual;
+}
+function calculoInss(salarioBruto) {
+    var salarioBrutoMensal = salarioBruto / 12;
+    var aliquota = 0;
+    if (salarioBrutoMensal <= 1212) {
+        aliquota = 0.075;
+    }
+    else if (salarioBrutoMensal <= 2427.35) {
+        aliquota = 0.09;
+    }
+    else if (salarioBrutoMensal <= 3641.03) {
+        aliquota = 0.12;
+    }
+    else {
+        aliquota = 0.14;
+    }
+    return salarioBrutoMensal * aliquota;
+}
+function calculoIr(salario, descontoInss) {
+    var salarioDescontado = salario - descontoInss;
+    var desconto = 0;
+    if (salarioDescontado <= 1903.98) {
+        desconto = 0;
+    }
+    else if (salarioDescontado <= 2826) {
+        desconto = 0.075;
+    }
+    else if (salarioDescontado <= 3751.05) {
+        desconto = 0.15;
+    }
+    else if (salarioDescontado <= 4664.68) {
+        desconto = 0.225;
+    }
+    else {
+        desconto = 0.275;
+    }
+    return salarioDescontado * desconto;
+}
+modelo(process.argv[2], parseInt(process.argv[3]), parseInt(process.argv[4]));
