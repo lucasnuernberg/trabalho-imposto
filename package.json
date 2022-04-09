@@ -1,0 +1,25 @@
+{
+  "name": "trabalho-imposto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucasnuernberg/trabalho-imposto.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lucasnuernberg/trabalho-imposto/issues"
+  },
+  "homepage": "https://github.com/lucasnuernberg/trabalho-imposto#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.23"
+  },
+  "dependencies": {
+    "typescript": "^4.6.3"
+  }
+}

@@ -32,11 +32,9 @@ Cria um arquivo exemplo com este conteúdo:
 Logo após rode no terminal:
 
       node index.js NomeModelo 3.000 5
-*/ 
-
+*/
 function modelo(nome, salario, horasExtra) {
     console.log(nome);
     console.log(salario);
     console.log(horasExtra);
 }
- 
