@@ -46,21 +46,28 @@ Valor salário líquido (salário bruto - desconto INSS - desconto IR + horas ex
  */
 /* modelo(process.argv[2], process.argv[3], process.argv[4]); */
 function modelo(nome, salario, horasExtrasAnual) {
+    var dadosRetornados = {};
     nome = process.argv[2];
     salario = parseInt(process.argv[3]);
     horasExtrasAnual = parseInt(process.argv[4]);
     var salarioBruto = totalVencimentos(salario, horasExtrasAnual);
     var descontoInss = calculoInss(salarioBruto);
-    var descontoIr = calculoIr(salario, descontoInss);
+    var descontoIr = calculoIr(salario, descontoInss[0]);
     var salarioTotalAnual = salario * 12;
     var valorHoraExtra = (salario / 200) * 1.5;
     var totalHorasExtras = valorHoraExtra * horasExtrasAnual;
-    console.log('');
-    console.log(nome);
-    console.log('Salario bruto: ' + salarioBruto);
-    console.log('Desconto INSS: ' + descontoInss);
-    console.log('Desconto IR: ' + descontoIr);
-    console.log('Salário Líquido: ' + (salario - descontoInss - descontoIr + totalHorasExtras));
+    var salarioLiquido = salario - descontoInss[0] - descontoIr[0] + totalHorasExtras;
+    dadosRetornados = {
+        nome: nome,
+        salarioBase: salarioBruto,
+        valorHorasExtras: totalHorasExtras,
+        faixaDescontoInss: descontoInss[1],
+        valorDescontadoInss: descontoInss[0],
+        faixaDescontoIr: descontoIr[1],
+        valorDescontadoIr: descontoIr[0],
+        salarioLiquido: salarioLiquido
+    };
+    return dadosRetornados;
 }
 function totalVencimentos(salario, horasExtras) {
     var salarioTotalAnual = salario * 12;
@@ -84,7 +91,7 @@ function calculoInss(salarioBruto) {
     else {
         aliquota = 0.14;
     }
-    return salarioBrutoMensal * aliquota;
+    return [salarioBrutoMensal * aliquota, aliquota];
 }
 function calculoIr(salario, descontoInss) {
     var salarioDescontado = salario - descontoInss;
@@ -104,6 +111,14 @@ function calculoIr(salario, descontoInss) {
     else {
         desconto = 0.275;
     }
-    return salarioDescontado * desconto;
+    return [salarioDescontado * desconto, desconto];
 }
-modelo(process.argv[2], parseInt(process.argv[3]), parseInt(process.argv[4]));
+var objetoDados = modelo(process.argv[2], parseInt(process.argv[3]), parseInt(process.argv[4]));
+console.log(objetoDados.nome);
+console.log('Salario bruto: ' + objetoDados.salarioBase);
+console.log('Valor total horas extras: ' + objetoDados.valorHorasExtras);
+console.log('Faixa desconto INSS: ' + objetoDados.faixaDescontoInss);
+console.log('Desconto INSS: ' + objetoDados.valorDescontadoInss);
+console.log('Faixa desconto IR :' + objetoDados.faixaDescontoIr);
+console.log('Desconto IR: ' + objetoDados.valorDescontadoIr);
+console.log('Valor salário liquido: ' + objetoDados.salarioLiquido);
