@@ -56,7 +56,10 @@ interface DadosRetornados {
     salarioLiquido: number;    
 }
 
-/* modelo(process.argv[2], process.argv[3], process.argv[4]); */
+
+class ImpostoRenda {
+    
+}
 
 function modelo(nome: string, salario: number, horasExtrasAnual: number) {
     nome = process.argv[2];
