@@ -2,19 +2,29 @@ interface DadosPessoa {
   nome: string;
   salario: number;
   horasExtras: number;
-  salarioBase: number;
+  salarioBruto: number;
   valorHorasExtras: number;
   faixaDescontoInss: number;
   valorDescontadoInss: number;
   faixaDescontoIr: number;
   valorDescontadoIr: number;
-  salarioLiquido: number;
   totalVencimentos: number;
+  salarioLiquido: number;
 }
-
 class Pessoa {
 
-  constructor() {
+  constructor(nome: string, salario: number, horasExtrasAnual: number) {
+    this.setNome(nome);
+    this.setSalario(salario);
+    this.setHorasExtras(horasExtrasAnual);
+    this.setTotalHorasExtras();
+    this.setTotalVencimentos();
+    this.setSalarioBruto();
+    this.setValorFaixaAliquota();
+    this.setValorDescontoInss();
+    this.setFaixaDescontoIr();
+    this.setValorDescontadoIr();
+    this.setSalarioLiquido();
   }
 
   private dadosPessoa = {} as DadosPessoa;
@@ -32,24 +42,31 @@ class Pessoa {
     this.dadosPessoa.horasExtras = horas;
   }
 
-  setTotalVencimentos() {
-    const salarioTotalAnual = this.dadosPessoa.salario * 12;
-    const valorHoraExtra = (this.dadosPessoa.salario / 200) * 1.5;
-    let valorTotalHorasExtras = valorHoraExtra * this.dadosPessoa.horasExtras;  
-    const salarioBrutoAnual = salarioTotalAnual + valorTotalHorasExtras;
+  setTotalHorasExtras(): void {
+    let valorHoraExtra = (this.dadosPessoa.salario / 200) * 1.5;
+    let valorTotalHorasExtras = valorHoraExtra * this.dadosPessoa.horasExtras;
+    this.dadosPessoa.valorHorasExtras = valorTotalHorasExtras;
+  }
 
+  setTotalVencimentos(): void {
+    let salarioTotalAnual = this.dadosPessoa.salario * 12;  
+    let salarioBrutoAnual = salarioTotalAnual + this.dadosPessoa.valorHorasExtras;
     this.dadosPessoa.totalVencimentos = salarioBrutoAnual;
   }
+
+  setSalarioBruto(): void {
+    this.dadosPessoa.salarioBruto = this.dadosPessoa.totalVencimentos / 12;
+  }
   
-  setValorFaixaAliquota() {
-    const salarioBrutoMensal = this.dadosPessoa.totalVencimentos / 12;
+  setValorFaixaAliquota(): void {
+    let salBruto = this.dadosPessoa.salarioBruto;
     let aliquota;
 
-    if (salarioBrutoMensal <= 1212) {
+    if (salBruto <= 1212) {
       aliquota = 0.075;
-    } else if (salarioBrutoMensal <= 2427.35) {
+    } else if (salBruto <= 2427.35) {
       aliquota = 0.09;
-    } else if (salarioBrutoMensal <= 3641.03) {
+    } else if (salBruto <= 3641.03) {
       aliquota = 0.12;
     } else {
       aliquota = 0.14;
@@ -58,13 +75,12 @@ class Pessoa {
     this.dadosPessoa.faixaDescontoInss = aliquota;
   }
 
-  setValorDescontoInss() {
-    this.dadosPessoa.valorDescontadoInss = (this.dadosPessoa.totalVencimentos / 12) * this.dadosPessoa.faixaDescontoInss;
+  setValorDescontoInss(): void {
+    this.dadosPessoa.valorDescontadoInss = parseFloat(((this.dadosPessoa.totalVencimentos / 12) * this.dadosPessoa.faixaDescontoInss).toFixed(2));
   }
 
-
   setFaixaDescontoIr(): void {
-    const salarioDescontado = this.dadosPessoa.salario - this.dadosPessoa.valorDescontadoInss;
+    let salarioDescontado = this.dadosPessoa.salario - this.dadosPessoa.valorDescontadoInss;
     let desconto;
     if (salarioDescontado <= 1903.98) {
       desconto = 0;
@@ -81,22 +97,14 @@ class Pessoa {
   }
 
   setValorDescontadoIr(): void {
-    this.dadosPessoa.valorDescontadoIr = (this.dadosPessoa.salario - this.dadosPessoa.valorDescontadoInss) * this.dadosPessoa.faixaDescontoIr;
+    this.dadosPessoa.valorDescontadoIr = parseFloat(((this.dadosPessoa.salario - this.dadosPessoa.valorDescontadoInss) * this.dadosPessoa.faixaDescontoIr).toFixed(2));
+  }
+  
+  setSalarioLiquido(): void {
+    this.dadosPessoa.salarioLiquido = parseFloat((this.dadosPessoa.salario - (this.dadosPessoa.valorDescontadoInss / 12) - (this.dadosPessoa.valorDescontadoIr / 12) + (this.dadosPessoa.valorHorasExtras / 12)).toFixed(2));
   }
 
   //Gets
-  getNome(): string {
-    return this.dadosPessoa.nome;
-  }
-
-  getSalario(): number {
-    return this.dadosPessoa.salario;
-  }
-
-  getHorasExtras(): number {
-    return this.dadosPessoa.horasExtras;
-  }
-
   getDadosPessoa(): DadosPessoa {
     return this.dadosPessoa;
   }
@@ -105,20 +113,7 @@ class Pessoa {
 
 function modelo(nome: string, salario: number, horasExtrasAnual: number): void {
 
-  const pessoa = new Pessoa();
-
-  nome = process.argv[2]
-  salario = parseInt(process.argv[3])
-  horasExtrasAnual = parseInt(process.argv[4])
-
-  pessoa.setNome(nome);
-  pessoa.setSalario(salario);
-  pessoa.setHorasExtras(horasExtrasAnual);
-  pessoa.setTotalVencimentos();
-  pessoa.setValorFaixaAliquota();
-  pessoa.setValorDescontoInss();
-  pessoa.setFaixaDescontoIr();
-  pessoa.setValorDescontadoIr();
+  const pessoa = new Pessoa(nome, salario, horasExtrasAnual);
 
   console.log(pessoa.getDadosPessoa());
 
