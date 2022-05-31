@@ -1,3 +1,4 @@
+//TRABALHO ATUALIZADO
 interface DadosPessoa {
   nome: string;
   salario: number;
